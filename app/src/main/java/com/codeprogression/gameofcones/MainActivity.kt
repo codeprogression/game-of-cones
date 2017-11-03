@@ -3,18 +3,23 @@ package com.codeprogression.gameofcones
 import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.main_activity.*
 import kotlin.properties.Delegates
 
-class MainActivity : AppCompatActivity(), MainView {
+class MainActivity : AppCompatActivity() {
+    private lateinit var presenter: MainPresenter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
-        val presenter = MainPresenter(this, this, FakeDataStore())
-        presenter.onCreate()
+        presenter = MainPresenter(this, FakeDataStore())
+        presenter.loadCone()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { state -> networkingViewState = state }
     }
 
-    override var networkingViewState: NetworkingViewState
+    private var networkingViewState: NetworkingViewState
             by Delegates.observable<NetworkingViewState>(NetworkingViewState.Init()) { _, _, newValue ->
                 when (newValue) {
                     is NetworkingViewState.Loading -> {

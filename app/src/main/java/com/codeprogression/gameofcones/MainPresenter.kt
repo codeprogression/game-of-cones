@@ -1,26 +1,23 @@
 package com.codeprogression.gameofcones
 
 import android.content.Context
-import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 
 class MainPresenter(
         private val context: Context,
-        private val view: MainView,
         private val dataStore: DataStore
 ) {
-    fun onCreate() {
-        view.networkingViewState = NetworkingViewState.Loading()
-        dataStore.fetchCone()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        { iceCream ->
-                            view.networkingViewState = NetworkingViewState.Success(IceCreamViewModel(context, iceCream))
-                        },
-                        { error ->
-                            view.networkingViewState = NetworkingViewState.Error(error.message)
+    fun loadCone(): Observable<NetworkingViewState> {
+        return Observable.concat(
+                Observable.just(NetworkingViewState.Loading()),
+                dataStore.fetchCone()
+                        .subscribeOn(Schedulers.io())
+                        .map { iceCream ->
+                            NetworkingViewState.Success(IceCreamViewModel(context, iceCream)) as NetworkingViewState
                         }
-                )
+                        .onErrorReturn {
+                            NetworkingViewState.Error(it.message)
+                        }.toObservable())
     }
 }
