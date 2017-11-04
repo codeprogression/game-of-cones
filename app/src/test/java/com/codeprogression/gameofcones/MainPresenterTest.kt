@@ -61,6 +61,7 @@ class ImmediateSchedulerRule : TestRule {
                 RxJavaPlugins.setIoSchedulerHandler { trampoline }
                 RxJavaPlugins.setComputationSchedulerHandler { trampoline }
                 RxJavaPlugins.setNewThreadSchedulerHandler { trampoline }
+                RxAndroidPlugins.setMainThreadSchedulerHandler{ trampoline }
 
                 try {
                     base.evaluate()

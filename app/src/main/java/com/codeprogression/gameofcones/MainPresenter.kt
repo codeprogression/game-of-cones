@@ -1,6 +1,7 @@
 package com.codeprogression.gameofcones
 
 import android.content.Context
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 class MainPresenter(
@@ -12,7 +13,7 @@ class MainPresenter(
         view.networkingViewState = NetworkingViewState.Loading()
         dataStore.fetchCone()
                 .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread()) // <-- not unit testable without robolectric
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         { iceCream ->
                             view.networkingViewState = NetworkingViewState.Success(IceCreamViewModel(context, iceCream))
