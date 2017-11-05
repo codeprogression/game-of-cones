@@ -10,7 +10,8 @@ class MainActivity : AppCompatActivity(), MainView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
-        MainPresenter(this, this, FakeDataStore())
+        val presenter = MainPresenter(this, this, FakeDataStore())
+        presenter.onCreate()
     }
 
     override var networkingViewState: NetworkingViewState
